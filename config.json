@@ -1,0 +1,5 @@
+{
+    "squares_color" : ["red", "yellowgreen", "green", "gold", "black", "purple", "maroon", "salmon", "springgreen", "magenta", "cyan", "gray", "lightseagreen"],
+    "mark_color": "blue",
+    "board_size" : 10
+}
