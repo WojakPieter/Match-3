@@ -59,7 +59,3 @@ class LossBox(object):
             return True
         else:
             return False
-
-
-app = QtWidgets.QApplication(sys.argv)
-msg_box = LossBox(24000)
