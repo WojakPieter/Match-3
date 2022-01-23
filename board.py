@@ -1,18 +1,17 @@
 from PySide2 import QtCore, QtGui, QtWidgets
-from PySide2.QtWidgets import QMessageBox, QInputDialog, QFormLayout, QLineEdit
-from PySide2.QtGui import QCursor, Qt
+from PySide2.QtWidgets import QMessageBox
+from PySide2.QtGui import Qt
 import random
 
-from main_window import Ui_MainWindow
 from sequences import Sequence
-from read_from_config import name_of_config_file, read_board_size_from_json
+from read_from_config import name_of_config_file
 from read_from_config import read_mark_color_from_json
 from read_from_config import read_colors_from_json
 from final_box import LossBox
 
 
 clicked_buttons = []
-levels = {
+points_for_levels = {
     1: 300,
     2: 900,
     3: 2300,
@@ -26,8 +25,9 @@ number_of_colors_for_levels = {
     2: 8,
     3: 9,
     4: 9,
-    5: 12,
-    6: 13
+    5: 11,
+    6: 13,
+    7: 13
 }
 
 file = open('config.json', 'r')
@@ -209,7 +209,7 @@ class Board(QtWidgets.QWidget):
     def nullify_sequences(self, list_of_squares):
         '''
             Creates an animation group which stands for disappearing
-            squares which are to be crossed out. It also removes a square object from list self.buttons.
+            squares which are to be crossed out.
 
             Args:
                 list_of_squares (list): list of tuples with x-index and y-index of squares
@@ -331,7 +331,7 @@ class Board(QtWidgets.QWidget):
             and afterwards - whether he losses. If not - unlocks all button and lets
             player play.
         '''
-        if levels[self.level] <= self.points:
+        if points_for_levels[self.level] <= self.points:
             self.level = self.level + 1
             msg_box = QMessageBox()
             msg_box.setWindowFlags(Qt.CustomizeWindowHint | Qt.WindowTitleHint)
@@ -523,6 +523,5 @@ def swap_values_in_table(table, x_index1, y_index1, x_index2, y_index2):
             x_index2 (int): index of sublist with element 2
             y_index2 (int): index of element 2 in a sublist
     '''
-    bufor = table[x_index1][y_index1]
-    table[x_index1][y_index1] = table[x_index2][y_index2]
-    table[x_index2][y_index2] = bufor
+
+    table[x_index1][y_index1], table[x_index2][y_index2] = table[x_index2][y_index2], table[x_index1][y_index1]
