@@ -25,6 +25,9 @@ class InvalidSizeError(Exception):
 
 
 def open_config_file(file_handler):
+    '''
+        Loads data from config file.
+    '''
     try:
         data = json.load(file_handler)
     except FileNotFoundError:
