@@ -33,7 +33,7 @@ class LossBox(object):
         self.name_line_edit.setObjectName("name_line_edit")
         self.name_line_edit.textEdited.connect(self._on_text_edit)
         self.OkButton = QtWidgets.QPushButton(Dialog)
-        self.OkButton.setGeometry(QtCore.QRect(260, 150, 93, 29))
+        self.OkButton.setGeometry(QtCore.QRect(230, 150, 150, 29))
         self.OkButton.setObjectName("OkButton")
         self.OkButton.setEnabled(False)
         self.OkButton.clicked.connect(lambda: save_result_to_file(self.name_line_edit.text(), points))
@@ -45,7 +45,7 @@ class LossBox(object):
         Dialog.setWindowTitle(_translate("Dialog", "Game over!"))
         self.label_text.setText(_translate("Dialog", f"You have no moves left! Your result is {points}."))
         self.label_write_name.setText(_translate("Dialog", "Write your name:"))
-        self.OkButton.setText(_translate("Dialog", "Ok"))
+        self.OkButton.setText(_translate("Dialog", "Save result and quit"))
 
     def _on_text_edit(self):
         if self._check_if_text_is_empty():
