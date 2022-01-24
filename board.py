@@ -30,8 +30,11 @@ number_of_colors_for_levels = {
     7: 13
 }
 
-file = open('config.json', 'r')
-mark_color = read_mark_color_from_json(file)
+try:
+    file = open('config.json', 'r')
+    mark_color = read_mark_color_from_json(file)
+except Exception:
+    pass
 
 
 class CustomAnimationGroup(QtCore.QParallelAnimationGroup):
@@ -147,7 +150,7 @@ class Board(QtWidgets.QWidget):
         self.buttons = []
         self.points = 0
         self.level = 1
-        self.button_colors = self.generate_colors()
+        self.button_colors = self._generate_colors()
         for i in range(side_length):
             self.buttons.append([])
         for x in range(side_length):
@@ -157,7 +160,6 @@ class Board(QtWidgets.QWidget):
         self.setGeometry(QtCore.QRect(30, 30, side_length * 60,
                                       side_length * 60))
         button = ''
-        self.show()
 
     def button_onclick_caller(self, coordinates):
         '''
@@ -179,7 +181,7 @@ class Board(QtWidgets.QWidget):
             if clicked_buttons in seq or clicked_buttons[::(-1)] in seq:
                 self.window_parent.button_swap_buttons.setEnabled(True)
 
-    def grow_sequences(self, list_of_squares):
+    def _grow_sequences(self, list_of_squares):
         '''
             Creates an animation group which stands for growing up by 10%
             squares which are to be crossed out. When the squares are grown, points
@@ -203,10 +205,10 @@ class Board(QtWidgets.QWidget):
                                           actual_button.y_coordinate - 2, 55, 55))
             anim.setDuration(400)
             self.anim_grow.addAnimation(anim)
-        self.anim_grow.finished.connect(lambda: self.addPoints(len(list_of_squares)))
+        self.anim_grow.finished.connect(lambda: self._addPoints(len(list_of_squares)))
         return self.anim_grow
 
-    def nullify_sequences(self, list_of_squares):
+    def _nullify_sequences(self, list_of_squares):
         '''
             Creates an animation group which stands for disappearing
             squares which are to be crossed out.
@@ -233,7 +235,7 @@ class Board(QtWidgets.QWidget):
             self.button_colors[list_of_squares[i][0]][list_of_squares[i][1]] = ''
         return self.anim_nullify
 
-    def unlock_buttons(self):
+    def _unlock_buttons(self):
         '''
             Changes all squares' property "Enabled" to True.
         '''
@@ -241,7 +243,7 @@ class Board(QtWidgets.QWidget):
             for button in row:
                 button.setEnabled(True)
 
-    def reloadBoard(self):
+    def _reloadBoard(self):
         '''
             Called when player ranks up. The function nullifies all squares on a board,
             creates new squares with another colors, sets them over the screen and brigns
@@ -254,10 +256,10 @@ class Board(QtWidgets.QWidget):
             for y in range(self.side_length):
                 integrated_buttons_array.append((x, y))
         sequencial1 = CustomSequentialAnimationGroup(Square(self))
-        sequencial1.addAnimation(self.grow_sequences(integrated_buttons_array))
-        sequencial1.addAnimation(self.nullify_sequences(integrated_buttons_array))
+        sequencial1.addAnimation(self._grow_sequences(integrated_buttons_array))
+        sequencial1.addAnimation(self._nullify_sequences(integrated_buttons_array))
         sequencial1.addPause(250)
-        self.button_colors = self.generate_colors()
+        self.button_colors = self._generate_colors()
         fall_new_board = CustomAnimationGroup(Square(self))
         for x in range(self.side_length):
             for y in range(self.side_length):
@@ -268,11 +270,11 @@ class Board(QtWidgets.QWidget):
                 button.updateCoordinates()
                 anim = self._animate_button_to_fall(button, self.side_length)
                 fall_new_board.addAnimation(anim)
-                fall_new_board.finished.connect(self.unlock_buttons)
+                fall_new_board.finished.connect(self._unlock_buttons)
         sequencial1.addAnimation(fall_new_board)
         sequencial1.start()
 
-    def swap_buttons(self, first_button, second_button):
+    def _swap_buttons(self, first_button, second_button):
         '''
             Sets property Enabled = False to all squares on a board (until the animations end),
             creates animation objects (QPropertyAnimation) which stand for swapping
@@ -318,14 +320,14 @@ class Board(QtWidgets.QWidget):
         self.buttons[second_button.x_index][second_button.y_index] = second_button
         return swap_group
 
-    def loss(self):
+    def _loss(self):
         '''
             Creates the final dialog box, when the game is lost.
         '''
         file.close()
         msg_box = LossBox(self.points)
 
-    def _check_the_promotion(self):
+    def _check_the_promotion_and_loss(self):
         '''
             Called after sequence of animations ends. It checks whether player ranks up,
             and afterwards - whether he losses. If not - unlocks all button and lets
@@ -340,12 +342,12 @@ class Board(QtWidgets.QWidget):
             msg_box.setText(f'You received level {self.level}! Press Ok to continue.')
             msg_box.exec_()
             self.window_parent.label_level_value.setText(str(self.level))
-            self.reloadBoard()
+            self._reloadBoard()
         seq = Sequence(self.button_colors)
         if seq.findPossibleSequences() == []:
-            self.loss()
+            self._loss()
 
-        self.unlock_buttons()
+        self._unlock_buttons()
 
     def _animate_button_to_fall(self, button, how_many_to_fall):
         '''
@@ -421,7 +423,7 @@ class Board(QtWidgets.QWidget):
         button.updateCoordinates()
         return button
 
-    def fall_squares(self):
+    def _fall_squares(self):
         '''
             Called when squares are crossed out. Creates animation group which stands for
             falling down all squares over the empty fields on the board. Also creates new squares
@@ -473,16 +475,16 @@ class Board(QtWidgets.QWidget):
         self.button_colors[second_button.x_index][second_button.y_index] = bufor
         sequence = Sequence(self.button_colors)
         sequencial = CustomSequentialAnimationGroup(Square(self))
-        sequencial.addAnimation(self.swap_buttons(first_button, second_button))
+        sequencial.addAnimation(self._swap_buttons(first_button, second_button))
         while sequence.findSequences() != []:
-            sequencial.addAnimation(self.grow_sequences(sequence.findSequences()))
-            sequencial.addAnimation(self.nullify_sequences(sequence.findSequences()))
-            sequencial.addAnimation(self.fall_squares())
+            sequencial.addAnimation(self._grow_sequences(sequence.findSequences()))
+            sequencial.addAnimation(self._nullify_sequences(sequence.findSequences()))
+            sequencial.addAnimation(self._fall_squares())
         sequencial.addPause(250)
-        sequencial.finished.connect(self._check_the_promotion)
+        sequencial.finished.connect(self._check_the_promotion_and_loss)
         sequencial.start()
 
-    def addPoints(self, crossed_squares_number):
+    def _addPoints(self, crossed_squares_number):
         '''
             Increases number of player points.
 
@@ -493,7 +495,7 @@ class Board(QtWidgets.QWidget):
             self.points += 10 * crossed_squares_number * self.level
             self.window_parent.label_points_value.setText(str(self.points))
 
-    def generate_colors(self):
+    def _generate_colors(self):
         '''
             Creates and returns a two-dimensional list with randomized
             colors of squares on the board.
@@ -506,7 +508,7 @@ class Board(QtWidgets.QWidget):
                 button_colors[x].append(random.choice(self.potential_colors))
         sequence = Sequence(button_colors)
         while sequence.findSequences() != [] or sequence.findPossibleSequences() == []:
-            return self.generate_colors()
+            return self._generate_colors()
         return button_colors
 
 
@@ -523,5 +525,4 @@ def swap_values_in_table(table, x_index1, y_index1, x_index2, y_index2):
             x_index2 (int): index of sublist with element 2
             y_index2 (int): index of element 2 in a sublist
     '''
-
     table[x_index1][y_index1], table[x_index2][y_index2] = table[x_index2][y_index2], table[x_index1][y_index1]
