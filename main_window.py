@@ -56,7 +56,7 @@ class Ui_MainWindow(object):
         font.setPointSize(12)
         font.setBold(True)
         self.button_swap_buttons = QtWidgets.QPushButton(self.right_bar)
-        self.button_swap_buttons.setGeometry(QtCore.QRect(10, 0.4 * size[1], 191, 29))
+        self.button_swap_buttons.setGeometry(QtCore.QRect(10, 0.4 * size[1], 230, 29))
         self.button_swap_buttons.setEnabled(False)
         self.button_swap_buttons.setText("Swap")
         self.button_swap_buttons.setFont(font)
