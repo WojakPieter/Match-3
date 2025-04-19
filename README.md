@@ -1,7 +1,4 @@
 ## Overview
-The goal is to create as many combinations of at least three squares of the same color as possible. To start, launch main.py file in Python interpreter. Then, click two adjacent buttons, which will make a combination when swapped, and finally click the "Swap" button. For more details, checkout the documentation. 
-
-## Overview
 Match-3 is a game with a goal to set three or more squares with the same color in one line
 (vertical or horizontal) by swapping two adjacent squares. Player receives points for each such
 arrangement, in accordance with the formula:
